@@ -14,6 +14,6 @@ int main()
     printf("%d - %d = %d\n", one, two ,one-two);
     printf("%d * %d = %d\n", one, two ,one*two);
     printf("%d / %d = %d\n", one, two ,one/two);
-    printf("%d %% %d = %d\n\n\n", one, two ,one*two/100);
+    printf("%d %% %d = %d\n\n\n", one, two ,one%two);
     return 0;
 }
