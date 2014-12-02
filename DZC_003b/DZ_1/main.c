@@ -3,7 +3,7 @@
 
 int main()
 {
-    char hour=12, minute=13,second=14;
+    char hour=1, minute=13,second=14;
     printf("____________________________\n\n");
     printf("%d:%d:%d\n",hour,minute,second);
     printf("%d:%d:%d\n",hour+1,minute+1,second+1);
