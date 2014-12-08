@@ -11,7 +11,7 @@ int main()
     printf("Enter number L\n:");
     scanf("%d",&numberl);
 
-    while(numberl>sum)
+    while(numberl>=sum)
     {
     degree+=1,sum=sum*numberx;
     }

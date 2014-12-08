@@ -3,13 +3,9 @@
 
 int main()
 {
-    int many, onenumber, numbers, sum=1, meter=0;
+    int many, numbers, sum=1, meter=0;
 
-    printf("Enter the number\n:");
-    scanf("%d",&onenumber);
-    printf("-----------------\n");
-
-    printf("Enter how many numbers will\n:", sum=onenumber*sum);
+    printf("Enter the numbers\n:");
     scanf("%d",&many);
     printf("-----------------\n");
 
