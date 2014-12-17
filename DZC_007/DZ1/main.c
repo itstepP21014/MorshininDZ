@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include <conio.h>
-void main ()
+#include <stdlib.h>
+
+int main ()
 {
-    int x,x1, difficult=0, division=2;
+    int x, x1, difficult=0, division=2;
 
     printf("Enter number\n:");
     scanf("%d",&x);
@@ -36,7 +37,7 @@ void main ()
         }
 
     }
-    printf("Write the numbers greater than 2 or 2");
+    printf("\n\nWrite the numbers greater than 2 or 2");
 
     return 0;
 }
