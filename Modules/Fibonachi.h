@@ -1,0 +1,6 @@
+#ifndef FIBONACHI_H_INCLUDED
+#define FIBONACHI_H_INCLUDED
+
+void Fibonach();
+
+#endif // FIBONACHI_H_INCLUDED
