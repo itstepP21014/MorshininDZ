@@ -1,9 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-char message[] = "Hello there!\n";
-char buf[sizeof(message)];
+char message[1024] = "Hello there!\n";
+char buf[1024];
+int port;
 
 int main()
 {
@@ -17,19 +21,25 @@ int main()
         exit(1);
     }
 
+    printf("port :");
+    scanf("%d", &port);
+
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(3425); // или любой другой порт...
+    addr.sin_port = htons(port); // или любой другой порт...
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     if(connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         perror("connect");
         exit(2);
     }
+    while(1)
+    {
+        send(sock, message, 1024, 0);
+        recv(sock, buf, 1024, 0);
 
-    send(sock, message, sizeof(message), 0);
-    recv(sock, buf, sizeof(message), 0);
-
-    printf(buf);
+        printf(buf);
+        scanf("%s", message);
+    }
     close(sock);
 
     return 0;
