@@ -5,16 +5,16 @@
 int main()
 {
 
-    unsigned char catalog[10][10];
+    int catalog[10][10];
 
-    char files;
+    char user;
 
     // Создание каталого забитие нулями
     for(int i=0; i<10; i++)
     {
         for(int j=0; j<10; j++)
         {
-            catalog[i][j] = 'q';
+            catalog[i][j] = 0;
         }
     }
     for(int i=0; i<10; i++)
@@ -27,21 +27,34 @@ int main()
     }
     // Создание каталого забитие нулями
 
-    //Создание папки/файла
-    int catal1=0, catal2=0;
+    printf("\t\t\t\t\t\t\t\t\t\tVirtual Mashine\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t   Commands:\n\t\t\t\t\tCreate->CreateFiles | Delete->DeleteFiles | Open->OpenFilesRead | Close->CloseFiles");
+    scanf("%s", &user);
 
-    scanf("%s", &files);
-    catalog[catal1][catal2] = files;
-
-    ++catal1;
-    for(int i=0; i<10; i++)
+    /*switch(user)
     {
-        for(int j=0; j<10; j++)
+    case `Create:
+        break;
+    case "Delete":
+        a++;
+    case "Open":
+        a++;
+    }*/
+
+            //Создание папки/файла
+        int catal1=0, catal2=0;
+
+        scanf("%d", &catalog[catal1][catal2]);
+
+        ++catal2;
+        for(int i=0; i<10; i++)
         {
-            printf("%s", &catalog[i][j]);
+            for(int j=0; j<10; j++)
+            {
+                printf("%d", catalog[i][j]);
+            }
+            printf("\n");
         }
-        printf("\n");
-    }
-    //Создание папки
+        //Создание папки
+
     return 0;
 }
