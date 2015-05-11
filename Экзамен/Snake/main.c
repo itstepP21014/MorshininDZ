@@ -48,7 +48,7 @@ Food food;
 int direction;
 SnakePart snake[SNAKE_MAX_LENGTH];
 int snakeLength = 1;
-int row, col;
+int row=26, col=102;
 int snakeLevel = 0;
 
 // Initialization of ncurses and the game
@@ -68,7 +68,7 @@ void initGame(void)
         printf("Your terminal does not support color\n");
     }
 
-    getmaxyx(stdscr, row, col);
+    //getmaxyx(stdscr, row, col);
     noecho();
     cbreak();
     curs_set(0);
@@ -107,7 +107,7 @@ void initSnake()
     snake[1].y = row/2;
     snake[0].x = 3;
     snake[0].y = row/2;
-    snakeLength = 3;
+    snakeLength = 10;
     direction = UP;
 }
 
