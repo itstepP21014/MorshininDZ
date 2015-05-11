@@ -3,9 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
-#include <curses.h>
+#include <ncurses.h>
 #include <time.h>
-#include <windows.h>
 
 #define SNAKE_MAX_LENGTH 30
 #define WIN_MSG "You are the WINNER!"
@@ -23,7 +22,15 @@
 
 void initGame(void);
 void checkGame();
-
+void addFood();
+void drawFood();
+void initSnake();
+void shiftSnake();
+void addHead();
+void removeTail();
+void moveSnake();
+void showWinner();
+void showWelcome();
 
 typedef struct SnakePart_
 {
@@ -101,7 +108,7 @@ void initSnake()
     snake[0].x = 3;
     snake[0].y = row/2;
     snakeLength = 3;
-    direction = ' ';
+    direction = UP;
 }
 
 // Draw the the actual position of the snake
@@ -254,10 +261,10 @@ void drawLevel()
     //1
     if(snakeLevel>=2)
     {
-        for (int i=5; i<row-5; i++)
+        for (int i=10; i<row-10; i++)
         {
-            mvaddch(i, 5, WALL_CHAR);
-            mvaddch(i, col-6, WALL_CHAR);
+            mvaddch(i, 10, WALL_CHAR);
+            mvaddch(i, col-10, WALL_CHAR);
             for (int i=5; i<col-5; i++)
             {
                 if(i<=30 || i>=col-30)
@@ -272,13 +279,13 @@ void drawLevel()
     //2
     if(snakeLevel>=4)
     {
-        for (int i=20; i<col-20; i++)
+        for (int i=20; i<col-19; i++)
         {
             mvaddch(row/3, i, WALL_CHAR);
-            mvaddch((row/3)*2, i, WALL_CHAR);
-            for (int i=8; i<row-8; i++)
+            mvaddch((row/3)*2-1, i, WALL_CHAR);
+            for (int i=10; i<row-10; i++)
             {
-                if(i<=10 || i>=14)
+                if(i<=11 || i>=15)
                 {
                     mvaddch(i, 20, WALL_CHAR);
                     mvaddch(i, col-20, WALL_CHAR);
@@ -345,9 +352,10 @@ void checkGame()
 int main()
 {
     char c;
+    int snakelvlup=3;
     int welcome= 1;
     int uplvl = 1;
-    int snakespeed = 160;
+    int snakespeed = 100;
     int speedlvl = 0;
 
     // Main game loop
@@ -364,8 +372,9 @@ int main()
             else
             {
                 showNextLevel();
-                timeout(2000);
-                snakespeed-=10;
+                sleep(1);
+                snakespeed-=5;
+                snakelvlup++;
             }
             getch();
             clear();
@@ -375,6 +384,7 @@ int main()
             addFood();
             refresh();
             uplvl--;
+            sleep(2);
         }
         timeout(snakespeed);
         c = getch();
@@ -386,7 +396,7 @@ int main()
         drawSnake();
         drawFood();
         refresh();
-        if(snakeLength==10)
+        if(snakeLength>=snakelvlup)
         {
             snakeLevel++;
             speedlvl-=5;
