@@ -3,7 +3,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#if defined(_WIN32) || defined(_WIN64)
+#include <curses.h>
+#endif
+#if defined(__linux__)
 #include <ncurses.h>
+#endif
 #include <time.h>
 
 #define SNAKE_MAX_LENGTH 30
@@ -19,6 +24,7 @@
 #define HEAD_SNAKE '@'
 #define FOOD_CHAR 'F'
 #define WALL_CHAR '#'
+
 
 void initGame(void);
 void checkGame();
@@ -372,7 +378,7 @@ int main()
             else
             {
                 showNextLevel();
-                sleep(1);
+                alarm(3);
                 snakespeed-=5;
                 snakelvlup++;
             }
@@ -384,9 +390,9 @@ int main()
             addFood();
             refresh();
             uplvl--;
-            sleep(2);
+            timeout(2000);
         }
-        timeout(snakespeed);
+        timeout(100);
         c = getch();
         setDirection(c);
         clear();
