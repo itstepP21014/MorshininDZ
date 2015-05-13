@@ -5,17 +5,23 @@
 #include <math.h>
 #if defined(_WIN32) || defined(_WIN64)
 #include <curses.h>
-#endif
-#if defined(__linux__)
+#include <windows.h>
+#define msleep(msec) Sleep(msec)
+#else
 #include <ncurses.h>
+#include <unistd.h>
+#define msleep(msec) usleep(msec*1000)
 #endif
 #include <time.h>
+#include <stdbool.h>
 
 #define SNAKE_MAX_LENGTH 30
 #define WIN_MSG "You are the WINNER!"
 #define WELCOME_MSG "Welcome to games SNAKE!!!"
 #define NEXTLVL_MSG "Next LEVEL!!"
 #define LOST_MSG "Loooooser :-))))"
+#define EXIT_MSG "COME BACK TO ME I WANT YOU PLAY ME!!!!"
+#define CREATER_MSG "by Nikolay Morshinin"
 #define UP 1
 #define DOWN 2
 #define LEFT 3
@@ -54,8 +60,14 @@ Food food;
 int direction;
 SnakePart snake[SNAKE_MAX_LENGTH];
 int snakeLength = 1;
-int row=26, col=102;
+int row=24, col=80;
 int snakeLevel = 0;
+int offon = 0;
+int welcome= 2;
+int snakelvlup=6;
+int uplvl = 0;
+int snakespeed = 170;
+int speedlvl = 0;
 
 // Initialization of ncurses and the game
 void initGame(void)
@@ -109,11 +121,13 @@ void drawFood()
 
 void initSnake()
 {
-    snake[1].x = 2;
-    snake[1].y = row/2;
-    snake[0].x = 3;
-    snake[0].y = row/2;
-    snakeLength = 10;
+    snakeLength = 3;
+    snake[2].x = 2;
+    snake[2].y = row-3;
+    snake[1].x = 3;
+    snake[1].y = row-3;
+    snake[0].x = 4;
+    snake[0].y = row-3;
     direction = UP;
 }
 
@@ -134,7 +148,6 @@ void drawSnake()
             addch(SNAKE_CHAR);
         }
         i++;
-
     }
 }
 
@@ -202,16 +215,28 @@ void setDirection(char c)
     switch(c)
     {
     case 'w':
-        direction = UP;
+        if(direction != DOWN)
+        {
+            direction = UP;
+        }
         break;
     case 's':
-        direction = DOWN;
+        if(direction != UP)
+        {
+            direction = DOWN;
+        }
         break;
     case 'd':
-        direction = RIGHT;
+        if(direction != LEFT)
+        {
+            direction = RIGHT;
+        }
         break;
     case 'a':
-        direction = LEFT;
+        if(direction != RIGHT)
+        {
+            direction = LEFT;
+        }
         break;
     }
 }
@@ -229,6 +254,7 @@ void showWelcome()
 {
     clear();
     mvprintw(row/2, col/2-strlen(WELCOME_MSG)/2, WELCOME_MSG);
+    mvprintw(row-2, col-strlen(CREATER_MSG)-2, CREATER_MSG);
     refresh();
 }
 
@@ -237,6 +263,7 @@ void showNextLevel()
 {
     clear();
     mvprintw(row/2, col/2-strlen(NEXTLVL_MSG)/2, NEXTLVL_MSG);
+    mvprintw(row-2, col-strlen(CREATER_MSG)-2, CREATER_MSG);
     refresh();
 }
 
@@ -245,6 +272,14 @@ void showYouLoose()
 {
     clear();
     mvprintw(row/2, col/2-strlen(LOST_MSG)/2, LOST_MSG);
+    mvprintw(row-2, col-strlen(CREATER_MSG)-2, CREATER_MSG);
+    refresh();
+}
+void showExit()
+{
+    clear();
+    mvprintw(row/2, col/2-strlen(EXIT_MSG)/2, EXIT_MSG);
+    mvprintw(row-2, col-strlen(CREATER_MSG)-2, CREATER_MSG);
     refresh();
 }
 
@@ -324,33 +359,94 @@ void drawLevel()
             mvaddch(12, i, WALL_CHAR);
         }
     }
-
+mvprintw(row, col-strlen(CREATER_MSG)-2, CREATER_MSG);
 
 }
 
 // Check on a game state. Checked after every game step (see main())
 void checkGame()
 {
-    if (snakeLength == SNAKE_MAX_LENGTH-1)
+    if (snakeLength == SNAKE_MAX_LENGTH+3)
     {
         showWinner();
-        timeout(-1);
-        getch();
+        msleep(3000);
         exit(0);
     }
     if ((mvinch(snake[0].y, snake[0].x) & A_CHARTEXT) == WALL_CHAR)
     {
         showYouLoose();
-        timeout(-1);
-        getch();
+        msleep(3000);
         exit(0);
     }
-    if ((mvinch(snake[0].y, snake[0].x) & A_CHARTEXT) == SNAKE_CHAR)
+
+    int i=1;
+    while (snake[i].x != -1 && snake[i].y != -1)
     {
-        showYouLoose();
-        timeout(-1);
-        getch();
-        exit(0);
+        if (snake[0].x == snake[i].x && snake[0].y == snake[i].y)
+        {
+            showYouLoose();
+            msleep(2000);
+            exit(0);
+        }
+        i++;
+    }
+}
+
+void menuGame()
+{
+    const char items[2][11] =
+    {
+        "Start Game",
+        "Exit"
+    };
+
+    unsigned choice = 0; //Выбор пользователя
+    char menu = ' ';
+
+    while ( offon == 0 )
+    {
+        clear();
+        for ( unsigned i = 0; i < 2; i++ ) //Проходим по всем элементам меню
+        {
+            if ( i == choice ) //Если текущий элемент совпадает с выбором пользователя
+            {
+                move(row/2-i, col/2-strlen(items[i])/2);
+                addch('>' | A_BOLD | A_UNDERLINE); //Выводим указатель
+            }
+            else
+            {
+                move(row/2-i, col/2-strlen(items[i])/2);
+                addch(' '); //Иначе выводим " ", для равновесия
+            }
+            printw("%s %d\n", items[i], i);
+            mvprintw(row-2, col-strlen(CREATER_MSG)-2, CREATER_MSG);
+        }
+        menu = getch();
+        //Получаем нажатие пользователя
+        switch (menu)
+        {
+        case 's':
+            if ( choice ) //Если возможно, переводим указатель вверх
+                choice--;
+            break;
+        case 'w':
+            if ( choice != 2 ) //Если возможно, переводим указатель вниз
+                choice++;
+            break;
+        case 'f':
+            if(choice == 1)
+            {
+                offon++;
+                showExit();
+                exit(0);
+                break;
+            }
+            if(choice == 0)
+            {
+                offon++;
+                break;
+            }
+        }
     }
 }
 
@@ -358,54 +454,51 @@ void checkGame()
 int main()
 {
     char c;
-    int snakelvlup=3;
-    int welcome= 1;
-    int uplvl = 1;
-    int snakespeed = 100;
-    int speedlvl = 0;
 
     // Main game loop
     while (1)
     {
-        if(uplvl == 1)
+        if(welcome == 1 || welcome == 2)
         {
             initGame();
-            if(welcome == 1)
+            if(welcome == 2)
             {
                 showWelcome();
-                welcome--;
+                msleep(3000);
+                welcome = 0;
             }
-            else
+            if (uplvl == 1)
             {
                 showNextLevel();
-                alarm(3);
-                snakespeed-=5;
-                snakelvlup++;
+                msleep(1000);
+                snakespeed-=10;
+                snakelvlup+=2;
+                uplvl--;
+                welcome--;
             }
-            getch();
+            menuGame();
             clear();
             initSnake();
             drawLevel();
             drawSnake();
             addFood();
             refresh();
-            uplvl--;
-            timeout(2000);
+            msleep(1000);
         }
-        timeout(100);
+        timeout(snakespeed);
         c = getch();
         setDirection(c);
         clear();
         drawLevel();
         moveSnake();
-        checkGame();
         drawSnake();
         drawFood();
+        checkGame();
         refresh();
-        if(snakeLength>=snakelvlup)
+        if(snakeLength==snakelvlup)
         {
+            welcome = 1;
             snakeLevel++;
-            speedlvl-=5;
             uplvl = 1;
         }
     }
