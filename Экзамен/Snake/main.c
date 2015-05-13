@@ -10,7 +10,7 @@
 #else
 #include <ncurses.h>
 #include <unistd.h>
-#define msleep(msec) usleep(msec*1000)
+#define msleep(msec) sleep(msec)
 #endif
 #include <time.h>
 #include <stdbool.h>
@@ -59,7 +59,7 @@ typedef struct Food_
 Food food;
 int direction;
 SnakePart snake[SNAKE_MAX_LENGTH];
-int snakeLength = 1;
+int snakeLength;
 int row=24, col=80;
 int snakeLevel = 0;
 int offon = 0;
@@ -67,7 +67,6 @@ int welcome= 2;
 int snakelvlup=6;
 int uplvl = 0;
 int snakespeed = 170;
-int speedlvl = 0;
 
 // Initialization of ncurses and the game
 void initGame(void)
@@ -326,7 +325,7 @@ void drawLevel()
             mvaddch((row/3)*2-1, i, WALL_CHAR);
             for (int i=10; i<row-10; i++)
             {
-                if(i<=11 || i>=15)
+                if(i<=16 || i>=20)
                 {
                     mvaddch(i, 20, WALL_CHAR);
                     mvaddch(i, col-20, WALL_CHAR);
@@ -356,17 +355,19 @@ void drawLevel()
     {
         for (int i=28; i<col-28; i++)
         {
-            mvaddch(12, i, WALL_CHAR);
+            mvaddch(10, i, WALL_CHAR);
+            mvaddch(13, i, WALL_CHAR);
         }
     }
 mvprintw(row, col-strlen(CREATER_MSG)-2, CREATER_MSG);
+mvprintw(row, 2,"Snake LVL %d  |  Left to eat %d | Speed Snake %d", snakeLevel, snakelvlup-snakeLength,snakespeed);
 
 }
 
 // Check on a game state. Checked after every game step (see main())
 void checkGame()
 {
-    if (snakeLength == SNAKE_MAX_LENGTH+3)
+    if (snakeLevel == 10)
     {
         showWinner();
         msleep(3000);
@@ -464,15 +465,15 @@ int main()
             if(welcome == 2)
             {
                 showWelcome();
-                msleep(3000);
+                msleep(2);
                 welcome = 0;
             }
             if (uplvl == 1)
             {
                 showNextLevel();
-                msleep(1000);
-                snakespeed-=10;
-                snakelvlup+=2;
+                msleep(2);
+                snakespeed-=15;
+                snakelvlup+=3;
                 uplvl--;
                 welcome--;
             }
@@ -483,7 +484,7 @@ int main()
             drawSnake();
             addFood();
             refresh();
-            msleep(1000);
+            msleep(1);
         }
         timeout(snakespeed);
         c = getch();
